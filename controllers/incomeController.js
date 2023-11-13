@@ -1,6 +1,8 @@
 // Import the Income array from the Income.js file
 const Income = require('../database/Income');
 
+const transactionLog = [];
+
 // Fetch all income data from the array
 exports.getAllIncome = (req, res) => {
     try {
@@ -52,5 +54,29 @@ exports.sumIncome = (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error summing income' });
+    }
+};
+
+
+exports.undoEndPoints = (req, res) => {
+    try {
+        if (transactionLog.length === 0) {
+            return res.status(404).json({ message: 'No transactions to undo.' });
+        }
+
+        const lastTransaction = transactionLog.pop();
+
+        if (lastTransaction.type === 'add') {
+            const indexToRemove = Income.findIndex(item => item === lastTransaction.data);
+            Income.splice(indexToRemove, 1);
+        } else if (lastTransaction.type === 'update') {
+            const indexToUpdate = Income.findIndex(item => item === lastTransaction.data);
+            Income[indexToUpdate] = lastTransaction.data;
+        }
+
+        res.json({ message: 'Last transaction undone successfully.', transaction: lastTransaction });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error undoing transaction' });
     }
 };

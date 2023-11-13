@@ -1,6 +1,10 @@
 // Import the Expense array from the Expense.js file
 const Expense = require('../database/Expense');
 
+// array for keeping track of all transaction history
+const transactionLog = [];
+
+
 // Fetch all expenses
 exports.getAllExpenses = (req, res) => {
     try {
@@ -54,3 +58,27 @@ exports.sumExpenses = (req, res) => {
         res.status(500).json({ message: 'Error summing expenses' });
     }
 };
+
+// Endpoint to undo the last transaction
+exports.undoEndPoints = (req, res) => {
+    try {
+        if (transactionLog.length === 0) {
+            return res.status(404).json({ message: 'No transactions to undo.' });
+        }
+
+        const lastTransaction = transactionLog.pop();
+
+        if (lastTransaction.type === 'add') {
+            const indexToRemove = Expense.findIndex(item => item === lastTransaction.data);
+            Expense.splice(indexToRemove, 1);
+        } else if (lastTransaction.type === 'update') {
+            const indexToUpdate = Expense.findIndex(item => item === lastTransaction.data);
+            Expense[indexToUpdate] = lastTransaction.data;
+        }
+
+        res.json({ message: 'Last transaction undone successfully.', transaction: lastTransaction });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error undoing transaction' });
+    }
+}
