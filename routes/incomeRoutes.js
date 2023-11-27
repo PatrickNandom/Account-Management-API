@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const incomeController = require('../controllers/incomeController');
-const verifyUser = require('../middlewares/verifyUser');
+// const verifyUser = require('../middlewares/verifyUser');
 
-
+router.post('/', incomeController.addIncome);
+router.put('/:id', incomeController.updateIncome);
 router.get('/', incomeController.getAllIncome);
-router.post('/addIncome', verifyUser, incomeController.addIncome);
-router.put('/:id', verifyUser, incomeController.updateIncome);
-router.get('/sum', incomeController.sumIncome);
-router.post('/undo', verifyUser, incomeController.undoEndPoints);
+
+
+// router.get('/sum', expenseController.sumExpenses);
+// router.post('/undo', verifyUser, expenseController.undoEndPoints);
 
 module.exports = router;
-

@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const sequelize = require('./database/db');
+
 const cors = require('cors');
 
 const loggerMiddleware = require('./middlewares/loggerMiddleware');
@@ -11,7 +13,7 @@ const expenseRoutes = require("./routes/expenseRoutes");
 app.use(cors());
 
 const corsOptions = {
-    "origigin": "http://localhost:5500"
+    "origin": "http://localhost:5500"
 }
 
 // .env configuration 
